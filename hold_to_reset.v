@@ -11,7 +11,7 @@ begin
     begin
      if ( &count ) doReset <= 1;
 	  else doReset <= 0;
-     count <= count + 1;
+     count <= count + 2'h1;
 	 end
   else
     begin

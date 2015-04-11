@@ -1,11 +1,12 @@
 /////////////////////////////////////////////////////////////
 // numbotron register
 
-module NUMReg( clk, slowclk, reg_inc, reg_dec, reg_inc_dig, reg_val, reg_z );
+module NUMReg( clk, slowclk, reg_inc, reg_dec, reg_inc_dig, reg_reset, reg_val, reg_z );
 input clk;
 input slowclk;
 input reg_inc;
 input reg_dec;
+input [2:0] reg_reset;
 input [2:0] reg_inc_dig;
 output [4*3-1:0] reg_val; // 3 4bit values
 output reg_z;
@@ -24,26 +25,30 @@ BCD dig1( .clk(clk),
 			 .digit( reg_val[3:0]),
 			 .iszero( is_zero[0]), 
 			 .isoverflow(inc_carry[1]),
-			 .isunderflow(dec_carry[1]) );
+			 .isunderflow(dec_carry[1]),
+			 .reset( reg_reset[0]) );
 BCD dig2( .clk(clk),
           .doinc( (inc_carry[1] &slowclk) | ( reg_inc_dig[1] ) ), 
           .dodec(dec_carry[1]),
 			 .digit( reg_val[7:4]),
 			 .iszero( is_zero[1]), 
 			 .isoverflow(inc_carry[2]),
-			 .isunderflow(dec_carry[2]) );
+			 .isunderflow(dec_carry[2]) ,
+			 .reset( reg_reset[1]));
 BCD dig3( .clk(clk),
           .doinc( (slowclk & inc_carry[2] ) | ( reg_inc_dig[2] ) ), 
           .dodec(dec_carry[2]),
 			 .digit( reg_val[11:8]),
-			 .iszero( is_zero[2])    );
+			 .iszero( is_zero[2]) ,
+			 .reset( reg_reset[2])   );
 	assign reg_z = is_zero[0] & is_zero[1] & is_zero[2];
 endmodule
 
-module BCD( clk, doinc, dodec, digit, iszero,isoverflow, isunderflow );
+module BCD( clk, doinc, dodec, digit, reset, iszero,isoverflow, isunderflow );
 input clk;
 input doinc;
 input dodec;
+input reset;
 output [3:0]digit;
 output iszero;
 output isoverflow;
@@ -54,11 +59,12 @@ reg [3:0] digit;
 
 wire incrollover = (digit==4'd9);
 wire decrollover = (digit==4'd0);
-always @(posedge clk)
+always @(posedge clk, posedge reset)
 begin
+  if( reset )
+    digit <= 0;
 
-
-  if(  doinc )
+  else if(  doinc )
 	  begin
 	    if( digit == 4'd9 ) 
 			 begin 

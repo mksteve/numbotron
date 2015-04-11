@@ -24,8 +24,8 @@ if (stable)
    begin 
 	   if( loopDone )
 		begin
-		  counter <= counter + 1;
-		  if( &counter ) counter <= 0;
+		  counter <= counter + 16'd1;
+		  if( &counter ) counter <= 16'd0;
 	     if( flop2 )
 		    onChangeOn <= 1;
 		   else 
