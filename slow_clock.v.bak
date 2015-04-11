@@ -1,0 +1,12 @@
+
+
+module slow_clock (input clock , output reg [31:0] counter_out, output slow_clock );
+always @ (posedge clock)// on positive clock edge
+begin
+if( counter_out == 31'd1000000 )
+   counter_out <= 0;
+	slow_clock = 1;
+else
+   counter_out <= #1 counter_out + 1;// increment counter
+	slow_clock = 1;
+end

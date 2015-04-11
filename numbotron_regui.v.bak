@@ -1,0 +1,27 @@
+//////////////////////////////////////////////////////////
+//
+module EditRegs( clk, incDigit, incSelection, slow_clock, slow_count, digit, doInc );
+input clk;
+input incDigit;      // ui for changing which digit to edit.
+input incSelection;  // ui for incrementing digit.
+input slow_clock;    // 1 clk input
+input [31:0] slow_count;
+output [4:0] digit;
+output doInc;
+reg [4:0] digit;
+output doInc;
+reg doInc;
+always @(posedge clk )
+if (slow_clock )
+begin
+  if( incDigit )
+  begin
+     if( digit == 5'd31 ) digit <= 0;
+	  digit <= digit + 1;
+  end
+  if( incDigit )
+     doInc <= 1;
+  else
+     doInc <= 0;
+end
+endmodule

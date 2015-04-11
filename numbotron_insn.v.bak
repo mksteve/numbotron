@@ -1,0 +1,10 @@
+/////////////////////////////////////////
+// numbotron instructions
+
+reg [24:0] current_instruction;
+reg instruction_finished;      // has the current instruction completed?
+reg running;                   // are we running? (or editing)
+reg stepping;                  // are we single stepping
+reg [4:0] instruction_pointer; // what are we working on?
+
+reg [24:0] instructions [0:24];// what instructions are defined.
