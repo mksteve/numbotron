@@ -1,34 +1,36 @@
 //////////////////////////////////////////////////////////
 //
-module EditRegs( clk, incDigit, incSelection, slow_clock, slow_count, digit, doInc );
+module EditRegs( clk, incDigit, incSelection, resetDigit, slow_clock, slow_count, digit, doInc );
 input clk;
 input incDigit;      // ui for changing which digit to edit.
 input incSelection;  // ui for incrementing digit.
 input slow_clock;    // 1 clk input
+input resetDigit; 
 input [31:0] slow_count;
 output [4:0] digit;
 output [31:0]doInc;
 reg [4:0] digit;
+wire [1:0]relDigit = digit[1:0];
 
 wire [31:0]doInc;
 integer i;
-always @(posedge clk )
-if (slow_clock )
-begin
-
-
-  if( incDigit )
+always @(posedge clk, posedge resetDigit )
+  if( resetDigit )
+    digit <= 5'd0;
+  else if( incDigit )
   begin
      if( digit == 5'd31 ) digit <= 0;
-	  digit <= digit + 1;
+	  else if( relDigit == 2'h2 )digit <= digit + 2;
+	  else digit <= digit + 1;
   end
-end
-assign doInc[0] =  ( slow_clock & incSelection && (digit == 0) ) ? 1 : 0;
-assign doInc[1] =  ( slow_clock & incSelection && (digit == 1) ) ? 1 : 0;
-assign doInc[2] =  ( slow_clock & incSelection && (digit == 2) ) ? 1 : 0;
-assign doInc[3] =  ( slow_clock & incSelection && (digit == 3) ) ? 1 : 0;
-assign doInc[4] =  ( slow_clock & incSelection && (digit == 4) ) ? 1 : 0;
-assign doInc[5] =  ( slow_clock & incSelection && (digit == 5) ) ? 1 : 0;
+
+  
+assign doInc[0] =  (incSelection && (digit == 0) ) ? 1 : 0;
+assign doInc[1] =  ( incSelection && (digit == 1) ) ? 1 : 0;
+assign doInc[2] =  ( incSelection && (digit == 2) ) ? 1 : 0;
+assign doInc[3] =  ( incSelection && (digit == 3) ) ? 1 : 0;
+assign doInc[4] =  ( incSelection && (digit == 4) ) ? 1 : 0;
+assign doInc[5] =  ( incSelection && (digit == 5) ) ? 1 : 0;
 assign doInc[6] =  ( slow_clock & incSelection && (digit == 6) ) ? 1 : 0;
 assign doInc[7] =  ( slow_clock & incSelection && (digit == 7) ) ? 1 : 0;
 assign doInc[8] =  ( slow_clock & incSelection && (digit == 8) ) ? 1 : 0;
